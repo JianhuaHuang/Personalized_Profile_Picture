@@ -1,0 +1,137 @@
+---
+title: "Generate GitHub Profile Picture with R"
+author: "Jianhua Huang"
+date: "August 7, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+This document shows how to generate a personalized profile picture using R. 
+
+```{r}
+library(png)
+library(reshape)
+library(grid)
+library(ggplot2)
+library(dplyr)
+library(grDevices)
+
+img <- readPNG('C:/Users/temp/Dropbox/work_doc/github/Personalized_Profile_Picture/picture.PNG')
+g <- rasterGrob(img, interpolate=TRUE)
+
+df.pic <- melt(as.matrix(g$raster)) %>%
+  transmute(x = X2, y = max(X1) - X1, color = value)
+
+## add image as logo
+ggplot(df.pic, aes(x = x, y = y)) +
+  geom_raster(aes(fill = color), alpha = 1) + 
+  scale_fill_identity() +
+  coord_equal() + 
+  theme_void()
+```
+
+
+You can also select part of the picture to plot, and you can even add the transparency
+```{r}
+df.part <- filter(df.pic, x > max(x) * .3, x < max(x) * .73, 
+  y > max(y) * .5, y < max(y) * .82)
+
+ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(aes(fill = color), alpha = .5) + 
+  scale_fill_identity() +
+  coord_equal() + 
+  theme_void()
+```
+
+
+```{r}
+df.part <- data.frame(df.part, t(col2rgb(df.part$color)))
+df.part$color.rgb <- colMeans(df.part[, c('red', 'green', 'blue')])
+
+ggplot(df.part, aes(x = x, y = y, fill = red)) +
+  geom_raster(alpha = .5) + 
+  scale_fill_continuous(high = 'white', low = 'red') + 
+  coord_equal() + 
+  theme_void()
+
+ggplot(df.part, aes(x = x, y = y, fill = green)) +
+  geom_raster(alpha = .5) + 
+  scale_fill_gradient2(high = 'black', low = 'white', midpoint = 150) + 
+  coord_equal() + 
+  theme_void()
+
+ggplot(df.part, aes(x = x, y = y, fill = blue)) +
+  geom_raster(alpha = .5) + 
+  scale_fill_gradient2(high = 'black', low = 'white', midpoint = 150) + 
+  coord_equal() + 
+  theme_void()
+```
+
+Plot RGB together
+```{r}
+ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(aes(fill = red)) +
+  geom_raster(aes(fill = blue)) +
+  geom_raster(aes(fill = green)) +
+  scale_fill_gradient2(high = 'black', low = 'white', midpoint = 128) + 
+  coord_equal() + 
+  theme_void()
+
+## without alpha, the last layer covers all previous
+p <- ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(aes(fill = red), alpha = 1) +
+  geom_raster(aes(fill = blue), alpha = .67) +
+  geom_raster(aes(fill = green), alpha = .33) +
+  coord_equal() + 
+  theme_void()
+
+p
+
+
+p + scale_fill_gradient2(high = 'white', low = 'black', midpoint = 128)
+p + scale_fill_gradient2(high = 'red', low = 'blue', midpoint = 128)
+p + scale_fill_gradient2(high = 'red', low = 'blue', mid = 'yellow', midpoint = 128)
+
+p + scale_fill_gradientn(colors = rainbow(4))
+
+
+## color filter
+p <- ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(fill= rgb(
+    red = 1 * df.part$red, 
+    green = 1 * df.part$green, 
+    blue = .5 * df.part$blue,
+    alpha = 1, max = 1000)) + 
+  coord_equal() + 
+  theme_void()
+
+p
+
+ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(aes(fill = color)) + 
+  scale_fill_identity() +
+  coord_equal() + 
+  theme_void()
+
+ggplot(df.part, aes(x = x, y = y, fill= rgb(red = 1 * red, 
+    green = 1 * df.part$green, 
+    blue = .5 * df.part$blue,
+    max = 255))) +
+  geom_raster() + 
+  coord_equal() + 
+  theme_void()
+
+```
+
+
+
+
+
+
+
+
+
