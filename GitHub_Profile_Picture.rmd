@@ -1,0 +1,76 @@
+---
+title: "Generate Personalized Profile Picture with R"
+author: "Jianhua Huang"
+date: "August 7, 2016"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r}
+library(png)
+library(reshape)
+library(grid)
+library(ggplot2)
+library(dplyr)
+library(grDevices)
+library(maps)
+library(scales)
+
+img <- readPNG('C:/Users/Jianhua/Dropbox/work_doc/github/Personalized_Profile_Picture/Self_Picture.PNG')
+g <- rasterGrob(img, interpolate=TRUE)
+
+df.pic <- melt(as.matrix(g$raster)) %>%
+  transmute(x = X2, y = max(X1) - X1, color = value)
+```
+
+
+## Plot with `ggplot`
+using the `ggplot` function, we can plot the picture directly.
+```{r}
+ggplot(df.pic, aes(x = x, y = y)) +
+  geom_raster(aes(fill = color)) + 
+  scale_fill_identity() +
+  coord_equal() + 
+  theme_void()
+```
+
+### Plot part of the picture
+```{r}
+df.part <- filter(df.pic, x > max(x) * .3, x < max(x) * .82, y > max(y) * .36, 
+  y < max(y) * .68)
+
+ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(aes(fill = color)) + 
+  scale_fill_identity() +
+  coord_equal() + 
+  theme_void()
+ 
+# divide the color hex value into red, green, and blue
+df.part <- data.frame(df.part, t(col2rgb(df.part$color)))
+
+## without alpha, the last layer covers all previous
+p <- ggplot(df.part, aes(x = x, y = y)) +
+  geom_raster(aes(fill = red), alpha = 1) +
+  geom_raster(aes(fill = blue), alpha = .67) +
+  geom_raster(aes(fill = green), alpha = .33) +
+  coord_equal() + 
+  theme_void() 
+
+p + scale_fill_gradient2(high = 'red', low = 'orange', midpoint = 128)+ 
+  guides(fill = FALSE)
+
+p + scale_fill_gradient2(high = 'wheat3', low = 'lightskyblue', midpoint = 128)+ 
+  guides(fill = FALSE)
+
+p + scale_fill_gradient2(high = 'wheat3', low = 'skyblue2', midpoint = 128)+ 
+  guides(fill = FALSE)
+
+p + scale_fill_gradient2(high = 'tan', low = 'lightsteelblue', midpoint = 128)+ 
+  guides(fill = FALSE)
+```
+
+
+
+
+
