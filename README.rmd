@@ -128,6 +128,10 @@ p <- ggplot(df.part, aes(x = x, y = y)) +
 
 p + scale_fill_gradient2(high = 'white', low = 'black', midpoint = 128)
 p + scale_fill_gradient2(high = 'black', low = 'white', midpoint = 128)
+```
+
+It was never so easy to become an artist:
+```{r}
 p + scale_fill_gradient2(high = 'red', low = 'blue', midpoint = 128)
 p + scale_fill_gradient2(high = 'red', low = 'blue', mid = 'yellow', midpoint = 128)
 

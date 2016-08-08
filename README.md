@@ -164,23 +164,25 @@ p + scale_fill_gradient2(high = 'black', low = 'white', midpoint = 128)
 
 ![](README_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
+It was never so easy to become an artist:
+
 ``` r
 p + scale_fill_gradient2(high = 'red', low = 'blue', midpoint = 128)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-3.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 p + scale_fill_gradient2(high = 'red', low = 'blue', mid = 'yellow', midpoint = 128)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-4.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-2.png)
 
 ``` r
 p + scale_fill_gradientn(colors = rev(rainbow(7)))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-5.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-3.png)
 
 Add another layer
 -----------------
@@ -201,6 +203,6 @@ ggplot(df.part, aes(x = x, y = y)) +
   guides(color = FALSE, fill = FALSE)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 Now, it is your turn to further personalize the picture.
